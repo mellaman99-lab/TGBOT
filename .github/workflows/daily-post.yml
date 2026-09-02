@@ -24,4 +24,5 @@ jobs:
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+          UNSPLASH_KEY: ${{ secrets.UNSPLASH_KEY }}
         run: python post_bot.py
