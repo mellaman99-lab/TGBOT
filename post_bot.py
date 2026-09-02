@@ -1,10 +1,7 @@
 """
 Бот для авто-постинга в Telegram-канал: "кто сейчас в тренде в русском хип-хопе".
-
-- artists.json — база артистов, каждый день бот берёт из неё следующих
-  N по кругу (без повторов, пока не пройдёт весь список).
-- Картинка на тему хип-хопа подтягивается с Unsplash (бесплатный API).
-- Пост отправляется в канал как фото с подписью.
+ВРЕМЕННАЯ ТЕСТОВАЯ ВЕРСИЯ — артисты выбираются случайно при каждом запуске,
+чтобы можно было посмотреть, как будет выглядеть пост в разные дни.
 """
 
 import json
@@ -52,21 +49,13 @@ def load_artists():
 def pick_today_artists(artists, n=ARTISTS_PER_POST):
     if not artists:
         raise ValueError("artists.json пуст — добавь хотя бы одного артиста")
-
-    today_index = date.today().toordinal()
-    total = len(artists)
-    start = (today_index * n) % total
-
-    selected = []
-    for i in range(n):
-        selected.append(artists[(start + i) % total])
-    return selected
+    # ВРЕМЕННО: случайный выбор для теста (обычно тут выбор по дате)
+    return random.sample(artists, min(n, len(artists)))
 
 
 def build_post_text(selected_artists):
-    day_idx = date.today().toordinal()
-    headline = HEADLINES[day_idx % len(HEADLINES)]
-    outro = OUTROS[day_idx % len(OUTROS)]
+    headline = random.choice(HEADLINES)
+    outro = random.choice(OUTROS)
 
     lines = [f"<b>{headline}</b>", ""]
     for artist in selected_artists:
@@ -121,24 +110,4 @@ def send_to_telegram(text, bot_token, channel_id, image_url):
 
 
 def main():
-    bot_token = os.environ.get("BOT_TOKEN")
-    channel_id = os.environ.get("CHANNEL_ID")
-    unsplash_key = os.environ.get("UNSPLASH_KEY")
-
-    if not bot_token or not channel_id:
-        raise SystemExit(
-            "Не заданы переменные окружения BOT_TOKEN и/или CHANNEL_ID."
-        )
-
-    artists = load_artists()
-    selected = pick_today_artists(artists)
-    text = build_post_text(selected)
-    image_url = get_image_url(unsplash_key)
-
-    result = send_to_telegram(text, bot_token, channel_id, image_url)
-    print("Отправлено:", result.get("ok"), "| с картинкой:", bool(image_url))
-    print(text)
-
-
-if __name__ == "__main__":
-    main()
+    bot_token
